@@ -1,0 +1,77 @@
+import Foundation
+
+// 지출 카테고리
+enum ExpenseCategory: String, CaseIterable, Codable {
+    case food = "음식"
+    case transport = "교통"
+    case shopping = "쇼핑"
+    case entertainment = "여가"
+    case health = "의료"
+    case education = "교육"
+    case utilities = "공과금"
+    case housing = "주거"
+    case other = "기타"
+    
+    var emoji: String {
+        switch self {
+        case .food: return "🍔"
+        case .transport: return "🚗"
+        case .shopping: return "🛍️"
+        case .entertainment: return "🎬"
+        case .health: return "💊"
+        case .education: return "📚"
+        case .utilities: return "💡"
+        case .housing: return "🏠"
+        case .other: return "💰"
+        }
+    }
+}
+
+// 수입 카테고리
+enum IncomeCategory: String, CaseIterable, Codable {
+    case salary = "급여"
+    case bonus = "상여금"
+    case business = "사업소득"
+    case investment = "투자수익"
+    case allowance = "용돈"
+    case sidejob = "부수입"
+    case refund = "환급"
+    case other = "기타"
+    
+    var emoji: String {
+        switch self {
+        case .salary: return "💵"
+        case .bonus: return "🎁"
+        case .business: return "💼"
+        case .investment: return "📈"
+        case .allowance: return "💝"
+        case .sidejob: return "💪"
+        case .refund: return "↩️"
+        case .other: return "💰"
+        }
+    }
+}
+
+// 통합 카테고리 (Transaction에서 사용)
+enum TransactionCategory: Codable, Equatable {
+    case expense(ExpenseCategory)
+    case income(IncomeCategory)
+    
+    var displayName: String {
+        switch self {
+        case .expense(let category):
+            return category.rawValue
+        case .income(let category):
+            return category.rawValue
+        }
+    }
+    
+    var emoji: String {
+        switch self {
+        case .expense(let category):
+            return category.emoji
+        case .income(let category):
+            return category.emoji
+        }
+    }
+}
