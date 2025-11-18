@@ -66,6 +66,7 @@
 		6D278E952EC310540069FAD9 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6D278E972EC313960069FAD9 /* BudgetSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetSettingView.swift; sourceTree = "<group>"; };
 		6D278E9A2EC3144B0069FAD9 /* InlineCategoryPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineCategoryPicker.swift; sourceTree = "<group>"; };
+		6DA11EBD2ECC5150005090F4 /* AccountBookFlow_PRD.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AccountBookFlow_PRD.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +97,7 @@
 		6D278E3C2EC30EF40069FAD9 = {
 			isa = PBXGroup;
 			children = (
+				6DA11EBD2ECC5150005090F4 /* AccountBookFlow_PRD.md */,
 				6D278E482EC30EF40069FAD9 /* AccountBookApp.swift */,
 				6D278E4A2EC30EF40069FAD9 /* ContentView.swift */,
 				6D278E782EC30F890069FAD9 /* Preview Content */,
