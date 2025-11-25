@@ -1,8 +1,41 @@
-//
-//  Currency.swift
-//  AccountBook
-//
-//  Created by dsu_student on 2025/11/25.
-//
-
 import Foundation
+
+enum Currency: String, CaseIterable, Codable, Identifiable {
+    case krw = "KRW"
+    case usd = "USD"
+    case eur = "EUR"
+    case jpy = "JPY"
+    case cny = "CNY"
+    
+    var id: String { self.rawValue }
+    
+    var symbol: String {
+        switch self {
+        case .krw: return "₩"
+        case .usd: return "$"
+        case .eur: return "€"
+        case .jpy: return "¥"
+        case .cny: return "¥"
+        }
+    }
+    
+    var name: String {
+        switch self {
+        case .krw: return "대한민국 원"
+        case .usd: return "미국 달러"
+        case .eur: return "유로"
+        case .jpy: return "일본 엔"
+        case .cny: return "중국 위안"
+        }
+    }
+    
+    var flag: String {
+        switch self {
+        case .krw: return "🇰🇷"
+        case .usd: return "🇺🇸"
+        case .eur: return "🇪🇺"
+        case .jpy: return "🇯🇵"
+        case .cny: return "🇨🇳"
+        }
+    }
+}

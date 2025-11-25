@@ -115,6 +115,8 @@ struct SummaryItem: View {
             Text("₩\(Int(amount))")
                 .font(.system(size: 18, weight: .bold))
                 .foregroundColor(color)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
         }
         .frame(maxWidth: .infinity)
     }
