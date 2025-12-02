@@ -76,14 +76,3 @@ struct InlineCategoryPicker: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
-
-// 프리뷰
-struct InlineCategoryPicker_Previews: PreviewProvider {
-    static var previews: some View {
-        InlineCategoryPicker(
-            selectedExpenseCategory: .constant(.food),
-            selectedIncomeCategory: .constant(.salary),
-            isIncome: false
-        )
-    }
-}

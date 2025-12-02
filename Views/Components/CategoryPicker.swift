@@ -105,14 +105,3 @@ struct IncomeCategoryButton: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
-
-// 프리뷰
-struct CategoryPicker_Previews: PreviewProvider {
-    static var previews: some View {
-        CategoryPicker(
-            selectedExpenseCategory: .constant(.food),
-            selectedIncomeCategory: .constant(.salary),
-            isIncome: false
-        )
-    }
-}
