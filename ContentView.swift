@@ -15,7 +15,7 @@ struct ContentView: View {
                     Label("AI 코칭", systemImage: "message.fill")
                 }
             
-            StatisticsView(viewModel: transactionViewModel)
+            StatisticView(viewModel: transactionViewModel)
                 .tabItem {
                     Label("통계", systemImage: "chart.bar.fill")
                 }

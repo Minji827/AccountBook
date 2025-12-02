@@ -1,7 +1,7 @@
 import SwiftUI
 import Charts
 
-struct StatisticsView: View {
+struct StatisticView: View {
     @ObservedObject var viewModel: TransactionViewModel
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedTab: StatisticsTab = .expense
@@ -354,8 +354,8 @@ struct IncomeCategoryDetailList: View {
 }
 
 // 프리뷰
-struct StatisticsView_Previews: PreviewProvider {
+struct StatisticView_Previews: PreviewProvider {
     static var previews: some View {
-        StatisticsView(viewModel: TransactionViewModel())
+        StatisticView(viewModel: TransactionViewModel())
     }
 }

@@ -104,7 +104,6 @@
 				6DA11EBD2ECC5150005090F4 /* AccountBookFlow_PRD.md */,
 				6D278E482EC30EF40069FAD9 /* AccountBookApp.swift */,
 				6D278E4A2EC30EF40069FAD9 /* ContentView.swift */,
-				6D278E782EC30F890069FAD9 /* Preview Content */,
 				6D278E772EC30F7C0069FAD9 /* Resources */,
 				6D278E762EC30F690069FAD9 /* Utilities */,
 				6D278E752EC30F620069FAD9 /* Services */,
@@ -180,13 +179,6 @@
 				6D278E4C2EC30EF50069FAD9 /* Assets.xcassets */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		6D278E782EC30F890069FAD9 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		6D278E7D2EC30FB60069FAD9 /* Home */ = {

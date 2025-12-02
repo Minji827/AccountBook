@@ -64,7 +64,7 @@ struct HomeView: View {
                 AddTransactionView(viewModel: viewModel)
             }
             .sheet(isPresented: $showingStatistics) {
-                StatisticsView(viewModel: viewModel)
+                StatisticView(viewModel: viewModel)
             }
             .sheet(isPresented: $showingBudgetSetting) {
                 BudgetSettingView(viewModel: viewModel)
