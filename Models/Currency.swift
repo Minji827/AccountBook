@@ -19,16 +19,6 @@ enum Currency: String, CaseIterable, Codable, Identifiable {
         }
     }
     
-    var name: String {
-        switch self {
-        case .krw: return "대한민국 원"
-        case .usd: return "미국 달러"
-        case .eur: return "유로"
-        case .jpy: return "일본 엔"
-        case .cny: return "중국 위안"
-        }
-    }
-    
     var flag: String {
         switch self {
         case .krw: return "🇰🇷"

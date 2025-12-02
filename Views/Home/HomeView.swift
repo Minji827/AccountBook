@@ -85,6 +85,12 @@ struct HomeView: View {
                             }
                         }
                         .padding(.horizontal)
+
+                        // 최근 거래 5개 표시
+                        ForEach(viewModel.transactions.sorted(by: { $0.date > $1.date }).prefix(5)) { transaction in
+                            TransactionRow(transaction: transaction)
+                                .padding(.horizontal)
+                        }
                     }
                 }
                 .padding(.vertical)
@@ -148,6 +154,7 @@ struct TotalAssetsCard: View {
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(.white)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .background(
             LinearGradient(
@@ -159,8 +166,8 @@ struct TotalAssetsCard: View {
                 endPoint: .bottomTrailing
             )
         )
-        .cornerRadius(20)
-        .shadow(color: Color.purple.opacity(0.3), radius: 10, x: 0, y: 5)
+        .cornerRadius(16)
+        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 
     func formatNumber(_ number: Double) -> String {
