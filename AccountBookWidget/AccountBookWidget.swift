@@ -84,8 +84,8 @@ struct AccountBookWidget: Widget {
     }
 }
 
-#Preview(as: .systemSmall) {
-    AccountBookWidget()
-} timeline: {
-    SimpleEntry(date: .now, balance: 1250000, exchangeRate: 1350.0)
-}
+// #Preview(as: .systemSmall) {
+//     AccountBookWidget()
+// } timeline: {
+//     SimpleEntry(date: .now, balance: 1250000, exchangeRate: 1350.0)
+// }
