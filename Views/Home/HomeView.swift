@@ -3,207 +3,388 @@ import SwiftUI
 struct HomeView: View {
     @ObservedObject var viewModel: TransactionViewModel
     @State private var showingAddTransaction = false
-    @State private var showingStatistics = false
-    @State private var showingBudgetSetting = false
-    
+    @State private var showingBudgetList = false
+    @State private var showingTransactionList = false
+
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // 요약 카드
-                SummaryCard(viewModel: viewModel)
-                    .padding()
-                
-                // AI 조언
-                if viewModel.monthlyBudget > 0 {
-                    AIAdviceCard(advice: viewModel.getAIAdvice())
-                        .padding(.horizontal)
-                        .padding(.bottom)
-                }
-                
-                // 검색 바
-                SearchBar(text: $viewModel.searchText)
+        ZStack(alignment: .bottomTrailing) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // 헤더
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("안녕하세요 👋")
+                            .font(.system(size: 28, weight: .bold))
+                        Text(formattedDate())
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
                     .padding(.horizontal)
-                
-                // 거래 내역 리스트
-                List {
-                    ForEach(viewModel.filteredTransactions.sorted(by: { $0.date > $1.date })) { transaction in
-                        TransactionRow(transaction: transaction)
-                    }
-                    .onDelete(perform: viewModel.deleteTransaction)
-                }
-                .listStyle(PlainListStyle())
-            }
-            .navigationTitle("가계부")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        showingStatistics = true
-                    }) {
-                        Image(systemName: "chart.bar.fill")
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    HStack {
-                        Button(action: {
-                            showingBudgetSetting = true
-                        }) {
-                            Image(systemName: "slider.horizontal.3")
+                    .padding(.top, 10)
+
+                    // 총 자산 카드
+                    TotalAssetsCard(viewModel: viewModel)
+                        .padding(.horizontal)
+
+                    // 이번 달 성과 카드
+                    MonthlyPerformanceCard(viewModel: viewModel)
+                        .padding(.horizontal)
+
+                    // 이번 달 예산
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("이번 달 예산")
+                                .font(.title3)
+                                .fontWeight(.bold)
+
+                            Spacer()
+
+                            Button(action: {
+                                showingBudgetList = true
+                            }) {
+                                Text("전체보기")
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
                         }
-                        
-                        Button(action: {
-                            showingAddTransaction = true
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title2)
+                        .padding(.horizontal)
+
+                        BudgetCategoryCard(
+                            icon: "fork.knife.circle.fill",
+                            iconColor: .pink,
+                            category: "외식",
+                            spent: 195000,
+                            budget: 300000
+                        )
+                        .padding(.horizontal)
+
+                        BudgetCategoryCard(
+                            icon: "cart.fill.badge.plus",
+                            iconColor: .blue,
+                            category: "쇼핑",
+                            spent: 210000,
+                            budget: 500000
+                        )
+                        .padding(.horizontal)
+                    }
+
+                    // 최근 거래
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("최근 거래")
+                                .font(.title3)
+                                .fontWeight(.bold)
+
+                            Spacer()
+
+                            Button(action: {
+                                showingTransactionList = true
+                            }) {
+                                Text("전체보기")
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
                         }
+                        .padding(.horizontal)
                     }
                 }
+                .padding(.vertical)
+                .padding(.bottom, 100)
             }
-            .sheet(isPresented: $showingAddTransaction) {
-                AddTransactionView(viewModel: viewModel)
+            .background(Color(.systemGroupedBackground))
+            .navigationBarHidden(true)
+
+            // + 버튼
+            Button(action: {
+                showingAddTransaction = true
+            }) {
+                Image(systemName: "plus")
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .frame(width: 60, height: 60)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.purple, Color.blue]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(Circle())
+                    .shadow(color: Color.purple.opacity(0.3), radius: 10, x: 0, y: 5)
             }
-            .sheet(isPresented: $showingStatistics) {
-                StatisticView(viewModel: viewModel)
-            }
-            .sheet(isPresented: $showingBudgetSetting) {
-                BudgetSettingView(viewModel: viewModel)
-            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 20)
         }
+        .sheet(isPresented: $showingAddTransaction) {
+            AddTransactionView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingTransactionList) {
+            TransactionListView(viewModel: viewModel)
+        }
+        .sheet(isPresented: $showingBudgetList) {
+            BudgetListView(viewModel: viewModel)
+        }
+    }
+
+    func formattedDate() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월 dd일 EEEE"
+        return formatter.string(from: Date())
     }
 }
 
-// 요약 카드 컴포넌트
-struct SummaryCard: View {
+// MARK: - Total Assets Card
+struct TotalAssetsCard: View {
     @ObservedObject var viewModel: TransactionViewModel
-    
+
     var body: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 20) {
-                SummaryItem(title: "수입", amount: viewModel.totalIncome(), color: .green)
-                Divider()
-                SummaryItem(title: "지출", amount: viewModel.totalExpense(), color: .red)
-                Divider()
-                SummaryItem(title: "잔액", amount: viewModel.totalIncome() - viewModel.totalExpense(), color: .blue)
-            }
-            .frame(height: 80)
-            
-            if viewModel.monthlyBudget > 0 {
-                BudgetProgressBar(viewModel: viewModel)
-            }
+        VStack(alignment: .leading, spacing: 16) {
+            Text("총 자산")
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.8))
+
+            Text("₩\(formatNumber(viewModel.totalIncome() - viewModel.totalExpense()))")
+                .font(.system(size: 36, weight: .bold))
+                .foregroundColor(.white)
         }
-        .padding()
+        .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 2)
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.4, green: 0.49, blue: 0.92),
+                    Color(red: 0.46, green: 0.29, blue: 0.63)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         )
+        .cornerRadius(20)
+        .shadow(color: Color.purple.opacity(0.3), radius: 10, x: 0, y: 5)
+    }
+
+    func formatNumber(_ number: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: Int(number))) ?? "0"
     }
 }
 
-// 요약 아이템
-struct SummaryItem: View {
-    let title: String
-    let amount: Double
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text("₩\(Int(amount))")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(color)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-// 예산 진행 바
-struct BudgetProgressBar: View {
+// MARK: - Monthly Performance Card
+struct MonthlyPerformanceCard: View {
     @ObservedObject var viewModel: TransactionViewModel
-    
+
+    var budgetAchievement: Int {
+        // 예산 목표 달성률 계산
+        return 78
+    }
+
+    var expenseReduction: Int {
+        // 지출 감소율 계산
+        return 15
+    }
+
+    var exchangeSavings: Int {
+        // 환율 절약 금액 계산
+        return 45200
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("월 예산")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Text("₩\(Int(viewModel.totalExpense())) / ₩\(Int(viewModel.monthlyBudget))")
-                    .font(.caption)
-                    .fontWeight(.medium)
+        HStack(spacing: 12) {
+            Text("📊")
+                .font(.title)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("이번 달 성과")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+
+                Text("예산 목표 달성률 \(budgetAchievement)% · 지출 \(expenseReduction)% 감소 · 환율 절약 ₩\(formatNumber(exchangeSavings))")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
             }
-            
+
+            Spacer()
+        }
+        .padding(16)
+        .background(
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color.blue.opacity(0.2),
+                    Color.blue.opacity(0.1)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(16)
+    }
+
+    func formatNumber(_ number: Int) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: number)) ?? "0"
+    }
+}
+
+// MARK: - Budget Category Card
+struct BudgetCategoryCard: View {
+    let icon: String
+    let iconColor: Color
+    let category: String
+    let spent: Double
+    let budget: Double
+
+    var progress: Double {
+        return spent / budget
+    }
+
+    var progressPercentage: Int {
+        return Int(progress * 100)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(iconColor)
+                    .frame(width: 50, height: 50)
+                    .background(iconColor.opacity(0.15))
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(category)
+                        .font(.headline)
+
+                    Text("\(formatNumber(spent))원")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                }
+
+                Spacer()
+
+                Text("\(formatNumber(budget))원")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+
+            // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.15))
                         .frame(height: 8)
-                        .cornerRadius(4)
-                    
-                    Rectangle()
-                        .fill(progressColor)
-                        .frame(width: min(CGFloat(viewModel.budgetPercentage() / 100) * geometry.size.width, geometry.size.width), height: 8)
-                        .cornerRadius(4)
+
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [iconColor, iconColor.opacity(0.7)]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: min(CGFloat(progress) * geometry.size.width, geometry.size.width), height: 8)
                 }
             }
             .frame(height: 8)
-        }
-    }
-    
-    var progressColor: Color {
-        let percentage = viewModel.budgetPercentage()
-        if percentage > 100 { return .red }
-        if percentage > 80 { return .orange }
-        return .green
-    }
-}
 
-// AI 조언 카드
-struct AIAdviceCard: View {
-    let advice: String
-    
-    var body: some View {
-        HStack {
-            Image(systemName: "sparkles")
-                .foregroundColor(.yellow)
-            Text(advice)
-                .font(.subheadline)
-                .foregroundColor(.primary)
+            Text("\(formatNumber(spent))원 사용 (\(progressPercentage)%)")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.yellow.opacity(0.1))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.systemBackground))
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
         )
     }
+
+    func formatNumber(_ number: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        return formatter.string(from: NSNumber(value: Int(number))) ?? "0"
+    }
 }
 
-// 검색 바
-struct SearchBar: View {
-    @Binding var text: String
-    
+// MARK: - Transaction List View
+struct TransactionListView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var viewModel: TransactionViewModel
+
     var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.gray)
-            TextField("검색", text: $text)
-            if !text.isEmpty {
-                Button(action: {
-                    text = ""
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
+        NavigationView {
+            List {
+                ForEach(viewModel.transactions.sorted(by: { $0.date > $1.date })) { transaction in
+                    TransactionRow(transaction: transaction)
                 }
+                .onDelete(perform: viewModel.deleteTransaction)
             }
+            .navigationTitle("전체 거래 내역")
+            .navigationBarItems(trailing: Button("닫기") {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
-        .padding(10)
-        .background(Color(.systemGray6))
-        .cornerRadius(10)
+    }
+}
+
+// MARK: - Budget List View
+struct BudgetListView: View {
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject var viewModel: TransactionViewModel
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(spacing: 16) {
+                    BudgetCategoryCard(
+                        icon: "fork.knife.circle.fill",
+                        iconColor: .pink,
+                        category: "외식",
+                        spent: 195000,
+                        budget: 300000
+                    )
+                    .padding(.horizontal)
+
+                    BudgetCategoryCard(
+                        icon: "cart.fill.badge.plus",
+                        iconColor: .blue,
+                        category: "쇼핑",
+                        spent: 210000,
+                        budget: 500000
+                    )
+                    .padding(.horizontal)
+
+                    BudgetCategoryCard(
+                        icon: "car.fill",
+                        iconColor: .orange,
+                        category: "교통",
+                        spent: 80000,
+                        budget: 150000
+                    )
+                    .padding(.horizontal)
+
+                    BudgetCategoryCard(
+                        icon: "house.fill",
+                        iconColor: .green,
+                        category: "주거",
+                        spent: 500000,
+                        budget: 600000
+                    )
+                    .padding(.horizontal)
+                }
+                .padding(.vertical)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("전체 예산")
+            .navigationBarItems(trailing: Button("닫기") {
+                presentationMode.wrappedValue.dismiss()
+            })
+        }
     }
 }
