@@ -1,4 +1,6 @@
 import SwiftUI
+import AIChat
+import Goal
 
 struct ContentView: View {
     @StateObject private var transactionViewModel = TransactionViewModel()
