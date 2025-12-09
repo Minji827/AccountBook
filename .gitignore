@@ -94,6 +94,11 @@ Config.swift
 # macOS
 .DS_Store
 
+# Design/Mockup files
+*.png
+*.html
+*.md
+
 # SwiftPM
 .swiftpm/
 
