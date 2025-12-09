@@ -273,6 +273,7 @@ struct SettingsTabView: View {
     @State private var showingNotification = false
     @State private var showingBackup = false
     @State private var showingAppInfo = false
+    @State private var showingResetConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -338,6 +339,28 @@ struct SettingsTabView: View {
                     action: { showingAppInfo = true }
                 )
                 .padding(.horizontal)
+
+                // 데이터 초기화 버튼
+                Button(action: {
+                    showingResetConfirmation = true
+                }) {
+                    HStack {
+                        Text("🗑️")
+                            .font(.title2)
+                        Text("저장 데이터 초기화")
+                            .font(.headline)
+                            .foregroundColor(.red)
+                        Spacer()
+                    }
+                    .padding(20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.systemBackground))
+                            .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+                    )
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
             }
             .padding(.vertical)
             .padding(.bottom, 100)
@@ -367,6 +390,28 @@ struct SettingsTabView: View {
         } message: {
             Text("AccountBook v1.0.0\n\n환율 기반 가계부 앱\n\n© 2024 AccountBook")
         }
+        .alert("저장 데이터 초기화", isPresented: $showingResetConfirmation) {
+            Button("취소", role: .cancel, action: {})
+            Button("초기화", role: .destructive, action: {
+                resetAllData()
+            })
+        } message: {
+            Text("모든 거래 내역과 예산 설정이 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.")
+        }
+    }
+
+    private func resetAllData() {
+        // 모든 거래 내역 삭제
+        viewModel.transactions.removeAll()
+        StorageService.shared.saveTransactions([])
+
+        // 예산 초기화
+        viewModel.monthlyBudget = 0
+        StorageService.shared.saveBudget(0)
+
+        // 카테고리별 예산 삭제
+        viewModel.categoryBudgets.removeAll()
+        StorageService.shared.saveCategoryBudgets([])
     }
 }
 
