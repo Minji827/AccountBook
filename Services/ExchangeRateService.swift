@@ -173,7 +173,7 @@ class ExchangeRateService: ObservableObject {
     @Published var errorMessage: String?
 
     // 한국 수출입은행 API Key
-    private let apiKey = "8On5pK8OO8PuhBIAG1fGbz7hoj6zmFNO"
+    private let apiKey = Config.exchangeRateAPIKey
     private let baseURL = "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON"
 
     // 우선순위 통화 (먼저 표시할 통화)

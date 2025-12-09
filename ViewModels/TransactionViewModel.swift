@@ -1,20 +1,37 @@
 import Foundation
 import Combine
 
+struct CategoryBudget: Codable {
+    var category: ExpenseCategory
+    var budget: Double
+
+    init(category: ExpenseCategory, budget: Double) {
+        self.category = category
+        self.budget = budget
+    }
+}
+
 class TransactionViewModel: ObservableObject {
     @Published var transactions: [Transaction] = []
     @Published var monthlyBudget: Double = 0
+    @Published var categoryBudgets: [CategoryBudget] = []
     @Published var searchText: String = ""
-    
+
     private let storageService = StorageService.shared
-    
+
     init() {
         loadTransactions()
         loadBudget()
+        loadCategoryBudgets()
 
         // 샘플 데이터가 없으면 자동으로 추가
         if transactions.isEmpty {
             addSampleData()
+        }
+
+        // 카테고리별 예산이 없으면 기본값 추가
+        if categoryBudgets.isEmpty {
+            addDefaultCategoryBudgets()
         }
     }
 
@@ -122,5 +139,36 @@ class TransactionViewModel: ObservableObject {
     
     private func loadBudget() {
         monthlyBudget = storageService.loadBudget()
+    }
+
+    private func loadCategoryBudgets() {
+        categoryBudgets = storageService.loadCategoryBudgets()
+    }
+
+    private func addDefaultCategoryBudgets() {
+        categoryBudgets = [
+            CategoryBudget(category: .food, budget: 300000),
+            CategoryBudget(category: .shopping, budget: 500000),
+            CategoryBudget(category: .transport, budget: 200000),
+            CategoryBudget(category: .entertainment, budget: 150000)
+        ]
+        saveCategoryBudgets()
+    }
+
+    func setCategoryBudget(category: ExpenseCategory, budget: Double) {
+        if let index = categoryBudgets.firstIndex(where: { $0.category == category }) {
+            categoryBudgets[index].budget = budget
+        } else {
+            categoryBudgets.append(CategoryBudget(category: category, budget: budget))
+        }
+        saveCategoryBudgets()
+    }
+
+    func getCategoryBudget(for category: ExpenseCategory) -> Double {
+        return categoryBudgets.first(where: { $0.category == category })?.budget ?? 0
+    }
+
+    private func saveCategoryBudgets() {
+        storageService.saveCategoryBudgets(categoryBudgets)
     }
 }

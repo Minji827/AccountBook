@@ -39,6 +39,20 @@ enum ExpenseCategory: String, CaseIterable, Codable {
         case .other: return .gray
         }
     }
+
+    var systemImageName: String {
+        switch self {
+        case .food: return "fork.knife.circle.fill"
+        case .transport: return "car.fill"
+        case .shopping: return "cart.fill.badge.plus"
+        case .entertainment: return "tv.fill"
+        case .health: return "heart.fill"
+        case .education: return "book.fill"
+        case .utilities: return "lightbulb.fill"
+        case .housing: return "house.fill"
+        case .other: return "ellipsis.circle.fill"
+        }
+    }
 }
 
 // 수입 카테고리

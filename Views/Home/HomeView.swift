@@ -48,23 +48,17 @@ struct HomeView: View {
                         }
                         .padding(.horizontal)
 
-                        BudgetCategoryCard(
-                            icon: "fork.knife.circle.fill",
-                            iconColor: .pink,
-                            category: "외식",
-                            spent: 195000,
-                            budget: 300000
-                        )
-                        .padding(.horizontal)
-
-                        BudgetCategoryCard(
-                            icon: "cart.fill.badge.plus",
-                            iconColor: .blue,
-                            category: "쇼핑",
-                            spent: 210000,
-                            budget: 500000
-                        )
-                        .padding(.horizontal)
+                        // 예산이 설정된 카테고리만 표시 (최대 3개)
+                        ForEach(viewModel.categoryBudgets.prefix(3), id: \.category) { categoryBudget in
+                            BudgetCategoryCard(
+                                icon: categoryBudget.category.systemImageName,
+                                iconColor: categoryBudget.category.color,
+                                category: categoryBudget.category.rawValue,
+                                spent: viewModel.expenseByCategory(categoryBudget.category),
+                                budget: categoryBudget.budget
+                            )
+                            .padding(.horizontal)
+                        }
                     }
 
                     // 최근 거래
