@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 struct AddTransactionView: View {
     @ObservedObject var viewModel: TransactionViewModel
@@ -14,12 +13,9 @@ struct AddTransactionView: View {
     @State private var isLoadingSuggestion: Bool = false
     @State private var showingCategoryPicker: Bool = false
     
-    // Currency & OCR
+    // Currency
     @State private var selectedCurrency: Currency = .krw
     @State private var exchangeRate: Double = 1.0
-    @State private var selectedItem: PhotosPickerItem?
-    @State private var selectedImage: UIImage?
-    @State private var isAnalyzingReceipt: Bool = false
     
     var body: some View {
         NavigationView {
@@ -57,33 +53,6 @@ struct AddTransactionView: View {
                                 .foregroundColor(.secondary)
                             Spacer()
                             Text(String(format: "%.2f KRW", exchangeRate))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                
-                Section(header: Text("영수증 스캔 (AI)")) {
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        HStack {
-                            Image(systemName: "camera.viewfinder")
-                            Text("영수증 불러오기")
-                        }
-                    }
-                    .onChange(of: selectedItem) { newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let image = UIImage(data: data) {
-                                selectedImage = image
-                                await analyzeReceipt(image)
-                            }
-                        }
-                    }
-                    
-                    if isAnalyzingReceipt {
-                        HStack {
-                            ProgressView()
-                            Text("AI가 영수증을 분석 중입니다...")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -154,39 +123,6 @@ struct AddTransactionView: View {
             exchangeRate = 1.0
         } else {
             exchangeRate = await ExchangeRateService.shared.getRate(for: currency)
-        }
-    }
-    
-    private func analyzeReceipt(_ image: UIImage) async {
-        isAnalyzingReceipt = true
-        do {
-            let draft = try await AIService.analyzeReceipt(image: image)
-            
-            await MainActor.run {
-                self.amount = String(Int(draft.amount)) // Simple int conversion for now
-                self.selectedCurrency = draft.currency
-                self.date = draft.date
-                self.note = draft.note
-                
-                if case .expense(let cat) = draft.category {
-                    self.isIncome = false
-                    self.selectedExpenseCategory = cat
-                } else if case .income(let cat) = draft.category {
-                    self.isIncome = true
-                    self.selectedIncomeCategory = cat
-                }
-                
-                self.isAnalyzingReceipt = false
-            }
-            
-            // Update rate if needed
-            if draft.currency != .krw {
-                await updateExchangeRate(for: draft.currency)
-            }
-            
-        } catch {
-            print("Receipt analysis failed: \(error)")
-            isAnalyzingReceipt = false
         }
     }
     
