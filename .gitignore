@@ -90,6 +90,7 @@ iOSInjectionProject/
 
 # API Keys and Secrets
 Config.swift
+Services/Config.swift
 
 # macOS
 .DS_Store

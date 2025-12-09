@@ -1,5 +1,10 @@
 import Foundation
 
+// MARK: - Config
+private struct Config {
+    static let exchangeRateAPIKey = "8On5pK8OO8PuhBIAG1fGbz7hoj6zmFNO"
+}
+
 // MARK: - Exchange Rate Response Model
 struct ExchangeRateResponse: Codable {
     let result: Int
@@ -93,7 +98,6 @@ struct ExchangeRate: Identifiable {
         case "QAR": return "🇶🇦"  // 카타르 리얄
         case "JOD": return "🇯🇴"  // 요르단 디나르
         case "ILS": return "🇮🇱"  // 이스라엘 셰켈
-        case "EGP": return "🇪🇬"  // 이집트 파운드
         case "IRR": return "🇮🇷"  // 이란 리알
         case "IQD": return "🇮🇶"  // 이라크 디나르
         case "LBP": return "🇱🇧"  // 레바논 파운드
