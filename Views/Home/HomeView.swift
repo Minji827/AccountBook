@@ -343,41 +343,29 @@ struct BudgetListView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 16) {
-                    BudgetCategoryCard(
-                        icon: "fork.knife.circle.fill",
-                        iconColor: .pink,
-                        category: "외식",
-                        spent: 195000,
-                        budget: 300000
-                    )
-                    .padding(.horizontal)
-
-                    BudgetCategoryCard(
-                        icon: "cart.fill.badge.plus",
-                        iconColor: .blue,
-                        category: "쇼핑",
-                        spent: 210000,
-                        budget: 500000
-                    )
-                    .padding(.horizontal)
-
-                    BudgetCategoryCard(
-                        icon: "car.fill",
-                        iconColor: .orange,
-                        category: "교통",
-                        spent: 80000,
-                        budget: 150000
-                    )
-                    .padding(.horizontal)
-
-                    BudgetCategoryCard(
-                        icon: "house.fill",
-                        iconColor: .green,
-                        category: "주거",
-                        spent: 500000,
-                        budget: 600000
-                    )
-                    .padding(.horizontal)
+                    if viewModel.categoryBudgets.isEmpty {
+                        VStack(spacing: 12) {
+                            Text("설정된 예산이 없습니다")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                            Text("설정 > 목표 관리에서 예산을 설정하세요")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        ForEach(viewModel.categoryBudgets, id: \.category) { categoryBudget in
+                            BudgetCategoryCard(
+                                icon: categoryBudget.category.systemImageName,
+                                iconColor: categoryBudget.category.color,
+                                category: categoryBudget.category.rawValue,
+                                spent: viewModel.expenseByCategory(categoryBudget.category),
+                                budget: categoryBudget.budget
+                            )
+                            .padding(.horizontal)
+                        }
+                    }
                 }
                 .padding(.vertical)
             }

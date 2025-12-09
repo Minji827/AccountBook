@@ -23,48 +23,6 @@ class TransactionViewModel: ObservableObject {
         loadTransactions()
         loadBudget()
         loadCategoryBudgets()
-
-        // 샘플 데이터가 없으면 자동으로 추가
-        if transactions.isEmpty {
-            addSampleData()
-        }
-
-        // 카테고리별 예산이 없으면 기본값 추가
-        if categoryBudgets.isEmpty {
-            addDefaultCategoryBudgets()
-        }
-    }
-
-    private func addSampleData() {
-        let sampleTransactions = [
-            Transaction(
-                amount: 420000,
-                category: .expense(.food),
-                note: "외식비",
-                date: Date()
-            ),
-            Transaction(
-                amount: 280000,
-                category: .expense(.shopping),
-                note: "쇼핑",
-                date: Date()
-            ),
-            Transaction(
-                amount: 210000,
-                category: .expense(.transport),
-                note: "교통비",
-                date: Date()
-            ),
-            Transaction(
-                amount: 490000,
-                category: .expense(.other),
-                note: "기타",
-                date: Date()
-            )
-        ]
-
-        transactions = sampleTransactions
-        saveTransactions()
     }
     
     var filteredTransactions: [Transaction] {
@@ -143,16 +101,6 @@ class TransactionViewModel: ObservableObject {
 
     private func loadCategoryBudgets() {
         categoryBudgets = storageService.loadCategoryBudgets()
-    }
-
-    private func addDefaultCategoryBudgets() {
-        categoryBudgets = [
-            CategoryBudget(category: .food, budget: 300000),
-            CategoryBudget(category: .shopping, budget: 500000),
-            CategoryBudget(category: .transport, budget: 200000),
-            CategoryBudget(category: .entertainment, budget: 150000)
-        ]
-        saveCategoryBudgets()
     }
 
     func setCategoryBudget(category: ExpenseCategory, budget: Double) {
