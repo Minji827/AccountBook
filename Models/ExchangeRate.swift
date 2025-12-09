@@ -49,28 +49,75 @@ struct ExchangeRate: Identifiable {
     }
 
     var flag: String {
-        switch currencyCode {
+        // 통화 코드에서 괄호 제거 (JPY(100) -> JPY)
+        let cleanCode = currencyCode.components(separatedBy: "(").first ?? currencyCode
+
+        switch cleanCode {
+        // 주요 통화
         case "USD": return "🇺🇸"
-        case "JPY(100)": return "🇯🇵"
+        case "JPY": return "🇯🇵"
         case "EUR": return "🇪🇺"
-        case "CNH": return "🇨🇳"
+        case "CNH", "CNY": return "🇨🇳"
         case "GBP": return "🇬🇧"
         case "CHF": return "🇨🇭"
         case "CAD": return "🇨🇦"
         case "AUD": return "🇦🇺"
+
+        // 아시아/태평양
         case "HKD": return "🇭🇰"
         case "SGD": return "🇸🇬"
+        case "THB": return "🇹🇭"
+        case "MYR": return "🇲🇾"
+        case "IDR": return "🇮🇩"
+        case "PHP": return "🇵🇭"
+        case "VND": return "🇻🇳"
+        case "TWD": return "🇹🇼"
+        case "INR": return "🇮🇳"
+        case "PKR": return "🇵🇰"
+        case "BDT": return "🇧🇩"
+        case "LKR": return "🇱🇰"
+        case "NZD": return "🇳🇿"
+        case "FJD": return "🇫🇯"
+        case "MNT": return "🇲🇳"
+
+        // 중동
         case "AED": return "🇦🇪"
         case "BHD": return "🇧🇭"
-        case "DKK": return "🇩🇰"
-        case "IDR(100)": return "🇮🇩"
-        case "KWD": return "🇰🇼"
-        case "MYR": return "🇲🇾"
-        case "NOK": return "🇳🇴"
-        case "NZD": return "🇳🇿"
         case "SAR": return "🇸🇦"
+        case "KWD": return "🇰🇼"
+        case "OMR": return "🇴🇲"
+        case "QAR": return "🇶🇦"
+        case "JOD": return "🇯🇴"
+        case "ILS": return "🇮🇱"
+        case "EGP": return "🇪🇬"
+
+        // 유럽
+        case "NOK": return "🇳🇴"
         case "SEK": return "🇸🇪"
-        case "THB": return "🇹🇭"
+        case "DKK": return "🇩🇰"
+        case "ISK": return "🇮🇸"
+        case "CZK": return "🇨🇿"
+        case "PLN": return "🇵🇱"
+        case "HUF": return "🇭🇺"
+        case "RON": return "🇷🇴"
+        case "RUB": return "🇷🇺"
+        case "TRY": return "🇹🇷"
+
+        // 아메리카
+        case "MXN": return "🇲🇽"
+        case "BRL": return "🇧🇷"
+        case "ARS": return "🇦🇷"
+        case "CLP": return "🇨🇱"
+        case "COP": return "🇨🇴"
+
+        // 아프리카
+        case "ZAR": return "🇿🇦"
+        case "NGN": return "🇳🇬"
+        case "KES": return "🇰🇪"
+
+        // 기타
+        case "KZT": return "🇰🇿"
+
         default: return "🌍"
         }
     }

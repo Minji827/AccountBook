@@ -11,76 +11,79 @@ struct SettingsView: View {
     @State private var showingAppInfo = false
 
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("설정 ⚙️")
-                            .font(.system(size: 32, weight: .bold))
-                        Text("앱 설정 및 관리")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-
-                    // Settings cards
-                    SettingsCard(
-                        icon: "person.circle.fill",
-                        iconColor: .blue,
-                        title: "프로필 설정",
-                        action: { showingProfile = true }
-                    )
-
-                    SettingsCard(
-                        icon: "dollarsign.circle.fill",
-                        iconColor: .pink,
-                        title: "통화 설정",
-                        action: { showingCurrency = true }
-                    )
-
-                    SettingsCard(
-                        icon: "bell.fill",
-                        iconColor: .green,
-                        title: "알림 설정",
-                        action: { showingNotification = true }
-                    )
-
-                    SettingsCard(
-                        icon: "target",
-                        iconColor: .purple,
-                        title: "목표 관리",
-                        action: { showingGoals = true }
-                    )
-
-                    SettingsCard(
-                        icon: "dollarsign.square.fill",
-                        iconColor: .indigo,
-                        title: "예산 설정",
-                        action: { showingBudget = true }
-                    )
-
-                    SettingsCard(
-                        icon: "icloud.fill",
-                        iconColor: .orange,
-                        title: "백업 & 동기화",
-                        action: { showingBackup = true }
-                    )
-
-                    SettingsCard(
-                        icon: "info.circle.fill",
-                        iconColor: .gray,
-                        title: "앱 정보",
-                        subtitle: "v1.0.0",
-                        action: { showingAppInfo = true }
-                    )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Header
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("설정 ⚙️")
+                        .font(.system(size: 32, weight: .bold))
+                    Text("앱 설정 및 관리")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
-                .padding(.vertical)
-                .padding(.bottom, 100)
+                .padding(.horizontal)
+                .padding(.top, 10)
+
+                // Settings cards
+                SettingsCard(
+                    icon: "👤",
+                    iconColor: Color(red: 0.7, green: 0.85, blue: 1.0),
+                    title: "프로필 설정",
+                    action: { showingProfile = true }
+                )
+                .padding(.horizontal)
+
+                SettingsCard(
+                    icon: "💱",
+                    iconColor: Color(red: 1.0, green: 0.9, blue: 0.9),
+                    title: "통화 설정",
+                    action: { showingCurrency = true }
+                )
+                .padding(.horizontal)
+
+                SettingsCard(
+                    icon: "🔔",
+                    iconColor: Color(red: 0.9, green: 1.0, blue: 0.9),
+                    title: "알림 설정",
+                    action: { showingNotification = true }
+                )
+                .padding(.horizontal)
+
+                // 이번 달 성과 카드
+                MonthlyPerformanceSummaryCard(viewModel: viewModel)
+                    .padding(.horizontal)
+
+                SettingsCard(
+                    icon: "🎯",
+                    iconColor: Color(red: 1.0, green: 0.9, blue: 1.0),
+                    title: "목표 관리",
+                    subtitle: "이번 달 예산 정하기",
+                    action: { showingBudget = true }
+                )
+                .padding(.horizontal)
+
+                SettingsCard(
+                    icon: "☁️",
+                    iconColor: Color(red: 1.0, green: 0.95, blue: 0.85),
+                    title: "백업 & 동기화",
+                    action: { showingBackup = true }
+                )
+                .padding(.horizontal)
+
+                SettingsCard(
+                    icon: "ℹ️",
+                    iconColor: Color(red: 0.95, green: 0.95, blue: 0.95),
+                    title: "앱 정보",
+                    subtitle: "v1.0.0",
+                    action: { showingAppInfo = true }
+                )
+                .padding(.horizontal)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationBarHidden(true)
+            .padding(.vertical)
+            .padding(.bottom, 100)
+        }
+        .background(Color(.systemGroupedBackground))
+        .navigationBarHidden(true)
             .sheet(isPresented: $showingGoals) {
                 GoalView()
             }
@@ -122,38 +125,98 @@ struct SettingsCard: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .foregroundColor(iconColor)
-                    .frame(width: 50, height: 50)
-                    .background(iconColor.opacity(0.15))
-                    .clipShape(Circle())
+            HStack(spacing: 16) {
+                // 이모지 아이콘을 배경색 위에 표시
+                Text(icon)
+                    .font(.system(size: 28))
+                    .frame(width: 56, height: 56)
+                    .background(iconColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
 
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.primary)
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(.system(size: 13))
+                            .foregroundColor(.secondary)
+                    }
+                }
 
                 Spacer()
 
-                if let subtitle = subtitle {
-                    Text(subtitle)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                } else {
-                    Image(systemName: "chevron.right")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.gray)
             }
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color(.systemBackground))
-                    .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
+                    .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
             )
-            .padding(.horizontal)
         }
+    }
+}
+
+// MARK: - Monthly Performance Summary Card
+struct MonthlyPerformanceSummaryCard: View {
+    @ObservedObject var viewModel: TransactionViewModel
+
+    var totalExpense: Double {
+        viewModel.totalExpense()
+    }
+
+    var totalIncome: Double {
+        viewModel.totalIncome()
+    }
+
+    var savingsRate: Double {
+        guard totalIncome > 0 else { return 0 }
+        return ((totalIncome - totalExpense) / totalIncome) * 100
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Text("📊")
+                    .font(.system(size: 28))
+                    .frame(width: 56, height: 56)
+                    .background(Color(red: 0.9, green: 0.95, blue: 1.0))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("이번 달 성과")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.primary)
+                }
+
+                Spacer()
+            }
+
+            // 성과 요약
+            Text("예산 목표 달성률 \(String(format: "%.0f", min(savingsRate, 100)))% · 지출 \(String(format: "%.0f", (totalExpense / max(totalIncome, 1)) * 100))% 감소 · 환율 절약 ₩\(formatAmount(totalIncome - totalExpense))")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+                .lineLimit(2)
+                .padding(.leading, 72)
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(red: 0.9, green: 0.95, blue: 1.0))
+                .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
+        )
+    }
+
+    private func formatAmount(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: abs(amount))) ?? "0"
     }
 }
 
